@@ -1,0 +1,6 @@
+Revision history for Perl extension File::ManualFlock::FlockOverride.
+
+0.01  Tue Apr 23 20:45:04 2002
+	- original version; created by h2xs 1.21 with options
+		-X -n File::ManualFlock::FlockOverride
+

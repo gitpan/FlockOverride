@@ -1,0 +1,88 @@
+File/ManualFlock/FlockOverride version 0.01
+===========================================
+
+INSTALLATION
+
+To install this module type the following:
+
+   perl Makefile.PL
+   make
+   make test
+   make install
+
+DEPENDENCIES
+
+This module requires these other modules and libraries:
+
+  File::Basename;
+  File::ManualFlock;
+  File::ManualFlock::Constants;
+  Cwd qw( getcwd abs_path );
+
+=item
+
+=head1 NAME
+
+File::ManualFlock::FlockOverride - 
+    overrides flock, if implemented on system, or provides manual file locking
+    for systems without standard flock function (Win95/98/??); uses File::ManualFlock
+    to lock files; overrides flock, open, and close functions in the calling package
+    
+=head1 SYNOPSIS
+    
+    use File::ManualFlock::FlockOverride qw( :flock_override );
+    
+    open( $fh, ">$filepath" );
+    my $lock = (LOCK_SH|LOCK_NB);
+    my $fl_result = flock( $fh, $lock );
+    close( $fh );
+    
+    See File::ManualFlock docs or flock() docs for more details regarding the possible 
+    values for $lock.
+
+=head1 DESCRIPTION
+
+This module allows the File::ManualLock module to be used as a substitute for flock.
+
+Mflock, like flock, is an advisory locking mechanism.  Mflock can be
+used as a substitute for flock, but it will not detect files locked
+with flock.  Likewise, flock will not detect files locked with mflock.  
+Thus, while File::ManualFlock::FlockOverride offers a 'flock'
+function that when used will override the standard flock and provide
+the same interface, the two locking methods cannot be used
+interchangeably. You must choose one or the other and go with it.
+
+=head1 NOTES
+
+Even though the flock function provided by this module is simply a wrapper
+around mflock method provided by the File::ManualLock module,
+its default behavior is different in order to match up with the standard 
+flock function's behavior (on systems where it is implemented.)  Thus, the 
+flock function provided here will not clobber expired locks and is blocking
+by default.
+
+This behavior is given by the line in the function File::ManualLock::FlockOverride::flock
+that calls the File::ManualLock::mflock method as follows:
+
+  $lh_keep_alive{$fh} = $mf->mflock( $filepath, $lock, MFL_INFINITE, MFL_INFINITE );
+
+You can modify the $max_wait and $expire params in the code in order to achieve
+another desired default behavior.  See the File::ManualFlock docs for additional
+details on the mflock method that it provides.
+
+=head1 LICENSE
+
+Same as Perl.
+
+=head1 CREDIT
+
+Much of the techniques and code in this module that allows these functions
+to override the core functions is borrowed from William Herrera's File::FlockDir
+module.  However, the underlying flock code was written from scratch.
+
+=head1 AUTHOR
+
+Bill Catlan, E<lt>wcatlan@cpan.orgE<gt>
+
+=cut
+
